@@ -1,5 +1,7 @@
 #include "DataDrivenFunctionalTest.h"
 #include "DataDrivenTestRenderComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 #if WITH_EDITOR
 #include "Misc/TransactionObjectEvent.h"
@@ -17,6 +19,35 @@ ADataDrivenFunctionalTest::ADataDrivenFunctionalTest(const FObjectInitializer& O
 		TestRenderComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 #endif
+}
+
+void ADataDrivenFunctionalTest::PrepareTest()
+{
+	Super::PrepareTest();
+
+	TestPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (TestPawn)
+	{
+		NodeRunner = FTestNodeRunner();
+	}
+}
+
+void ADataDrivenFunctionalTest::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (IsReady() && bIsRunning && TestPawn)
+	{
+		ETestNodeActionResult NodesResult = NodeRunner.Tick(this, Nodes, TestPawn, DeltaSeconds);
+		switch (NodesResult)
+		{
+			case ETestNodeActionResult::Success:
+				FinishTest(EFunctionalTestResult::Succeeded, FString(TEXT("Yay")));
+				return;
+			case ETestNodeActionResult::Failed:
+				FinishTest(EFunctionalTestResult::Failed, FString(TEXT("OMGFAIL")));
+				return;
+		}
+	}
 }
 
 void ADataDrivenFunctionalTest::UpdateDrawing()

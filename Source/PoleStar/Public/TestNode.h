@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "TestNode.generated.h"
 
+class UTestNodeAction;
+
 USTRUCT(BlueprintType)
 struct POLESTAR_API FTestNode
 {
@@ -10,8 +12,8 @@ struct POLESTAR_API FTestNode
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(MakeEditWidget=true))
-	FVector TargetPosition;
+	FVector Location;
 
-	UPROPERTY(Transient, BlueprintReadOnly)
-	TObjectPtr<AActor> TargetNodeActor;
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly)
+	TArray<TObjectPtr<UTestNodeAction>> Actions;
 };

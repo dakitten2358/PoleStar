@@ -4,9 +4,11 @@
 #include "FunctionalTest.h"
 #include "TestNode.h"
 #include "TestNodeSource.h"
+#include "TestNodeRunner.h"
 #include "DataDrivenFunctionalTest.generated.h"
 
 class UDataDrivenTestRenderComponent;
+class UTestNodeAction;
 
 UCLASS(Blueprintable, BlueprintType)
 class POLESTAR_API ADataDrivenFunctionalTest : public AFunctionalTest, public ITestNodeSource
@@ -14,17 +16,27 @@ class POLESTAR_API ADataDrivenFunctionalTest : public AFunctionalTest, public IT
 	GENERATED_UCLASS_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category="Funcitonal Testing", AdvancedDisplay)
-	bool NodeMovementRelative;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Functional Testing")
 	TArray<FTestNode> Nodes;
 
 	// ITestNodeSource
 	TArray<FTestNode> GetTestNodes() const { return Nodes; }
 
+	// AActor
+	virtual void Tick(float DeltaSeconds) override;
+
+	// FunctionalTest
+	virtual void PrepareTest() override;
+
 protected:
 	void UpdateDrawing();
+
+private:
+	FTestNodeRunner NodeRunner;
+
+protected:
+	UPROPERTY(Transient, BlueprintReadOnly)
+	TObjectPtr<APawn> TestPawn;
 	
 #if WITH_EDITORONLY_DATA
 #if WITH_EDITOR

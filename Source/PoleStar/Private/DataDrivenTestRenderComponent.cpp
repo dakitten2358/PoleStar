@@ -34,11 +34,11 @@ FTestSceneProxy::FTestSceneProxy(const UPrimitiveComponent& InComponent)
 		{
 			// draw lines between the nodes
 			for (int nodeIndex = 1; nodeIndex < TestNodes.Num(); ++nodeIndex)
-				Lines.Emplace(TestNodes[nodeIndex - 1].TargetPosition + Offset, TestNodes[nodeIndex].TargetPosition + Offset, FColor::Green, 2.0f);
+				Lines.Emplace(TestNodes[nodeIndex - 1].Location + Offset, TestNodes[nodeIndex].Location + Offset, FColor::Green, 2.0f);
 
 			// draw spheres around each node
 			for (const FTestNode& TestNode : TestNodes)
-				Spheres.Add(FSphere(100.0f, TestNode.TargetPosition + Offset, FColor::Green));
+				Spheres.Add(FSphere(100.0f, TestNode.Location + Offset, FColor::Green));
 		}
 
 		// if we have at least one node, find the nearest player start
@@ -50,7 +50,7 @@ FTestSceneProxy::FTestSceneProxy(const UPrimitiveComponent& InComponent)
 				if (Itr->IsA(APlayerStart::StaticClass()))
 				{
 					APlayerStart* PlayerStart = Cast<APlayerStart>(*Itr);
-					Lines.Emplace(PlayerStart->GetActorLocation(), TestNodes[0].TargetPosition + Offset, FColor::Green);
+					Lines.Emplace(PlayerStart->GetActorLocation(), TestNodes[0].Location + Offset, FColor::Green);
 					break;
 				}
 			}
@@ -96,7 +96,7 @@ FBoxSphereBounds UDataDrivenTestRenderComponent::CalcBounds(const FTransform& Lo
 
 	FVector Offset = ActorOwner->GetActorLocation();
 	for(const FTestNode& TestNode : TestNodes)
-		DebugBoundsBuilder += TestNode.TargetPosition + Offset;
+		DebugBoundsBuilder += TestNode.Location + Offset;
 
 	return DebugBoundsBuilder;
 }
