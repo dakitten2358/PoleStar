@@ -42,7 +42,7 @@ ETestNodeActionResult FTestNodeActionRunner::Tick(const FVector& NodeLocation, T
 	{
 	case ETestNodeActionResult::Success:
 		UE_LOG(LogPoleStar, Verbose, TEXT("Ending action [%d]"), CurrentActionIndex);
-		Actions[CurrentActionIndex]->OnTestNodeEnd(ETestNodeEndReason::Requested);
+		Actions[CurrentActionIndex]->OnTestNodeEnd(ETestNodeEndReason::Requested, Pawn);
 		++CurrentActionIndex;
 		if (CurrentActionIndex < Actions.Num())
 		{
@@ -52,7 +52,7 @@ ETestNodeActionResult FTestNodeActionRunner::Tick(const FVector& NodeLocation, T
 		break;
 	case ETestNodeActionResult::Failed:
 		UE_LOG(LogPoleStar, Warning, TEXT("Failed action [%d]"), CurrentActionIndex);
-		Actions[CurrentActionIndex]->OnTestNodeEnd(ETestNodeEndReason::Requested);
+		Actions[CurrentActionIndex]->OnTestNodeEnd(ETestNodeEndReason::Requested, Pawn);
 		CurrentActionIndex = -1;
 		return ETestNodeActionResult::Failed;
 	}

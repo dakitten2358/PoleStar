@@ -28,7 +28,7 @@ class POLESTAR_API UTestNodeAction : public UObject
 public:
 	virtual ETestNodeActionResult OnTestNodeStart(const FVector& NodeLocation, TObjectPtr<APawn> Pawn) { return ETestNodeActionResult::Success; }
 	virtual ETestNodeActionResult OnTestNodeTick(const FVector& NodeLocation, TObjectPtr<APawn> Pawn, float DeltaTime) { return ETestNodeActionResult::Success; }
-	virtual void OnTestNodeEnd(ETestNodeEndReason ReasonForEnd) {}
+	virtual void OnTestNodeEnd(ETestNodeEndReason ReasonForEnd, TObjectPtr<APawn> Pawn) {}
 };
 
 #if UE_ENABLE_INCLUDE_ORDER_DEPRECATED_IN_5_2
