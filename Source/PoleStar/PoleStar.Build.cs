@@ -39,6 +39,7 @@ public class PoleStar : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...	
+				"EnhancedInput",
 				"FunctionalTesting",
 				"MessagingCommon",
 				"AutomationMessages",
