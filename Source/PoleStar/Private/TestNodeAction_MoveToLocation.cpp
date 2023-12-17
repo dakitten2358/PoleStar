@@ -5,6 +5,8 @@
 #include "PoleStarLogChannels.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+const float UTestNodeAction_MoveToLocation::DefaultArrivalRadius = 20.0f;
+
 ETestNodeActionResult UTestNodeAction_MoveToLocation::OnTestNodeStart(const FVector& NodeLocation, TObjectPtr<APawn> Pawn)
 {
 	Super::OnTestNodeStart(NodeLocation, Pawn);
@@ -26,7 +28,7 @@ ETestNodeActionResult UTestNodeAction_MoveToLocation::OnTestNodeTick(const FVect
 	
 	FVector ActorLocation = Pawn->GetActorLocation();
 
-	if (FVector::Dist2D(ActorLocation, NodeLocation) < 20.0f)
+	if (FVector::Dist2D(ActorLocation, NodeLocation) < ArrivalRadius)
 	{
 		UE_LOG(LogPoleStar, Verbose, TEXT("Reached destination."));
 		return ETestNodeActionResult::Success;

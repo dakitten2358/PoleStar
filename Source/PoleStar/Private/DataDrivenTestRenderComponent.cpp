@@ -3,6 +3,8 @@
 #include "TestNode.h"
 #include "TestNodeSource.h"
 #include "SceneInterface.h"
+#include "TestNodeAction_MoveToLocation.h"
+#include "TestAcceptanceRadiusProvider.h"
 #include "GameFramework/PlayerStart.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DataDrivenTestRenderComponent)
@@ -38,7 +40,18 @@ FTestSceneProxy::FTestSceneProxy(const UPrimitiveComponent& InComponent)
 
 			// draw spheres around each node
 			for (const FTestNode& TestNode : TestNodes)
-				Spheres.Add(FSphere(100.0f, TestNode.Location + Offset, FColor::Green));
+			{
+				float Radius = UTestNodeAction_MoveToLocation::DefaultArrivalRadius;
+				for (const TObjectPtr<UTestNodeAction>& Action : TestNode.Actions)
+				{
+					if (ITestAcceptanceRadiusProvider* RadiusProvider = Cast<ITestAcceptanceRadiusProvider>(Action))
+					{
+						Radius = RadiusProvider->GetAcceptanceRadius();
+						break;
+					}
+				}
+				Spheres.Add(FSphere(Radius, TestNode.Location + Offset, FColor::Green));
+			}
 		}
 
 		// if we have at least one node, find the nearest player start
