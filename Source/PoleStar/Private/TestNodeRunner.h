@@ -15,7 +15,7 @@ struct FTestNodeRunner
 	GENERATED_BODY();
 
 public:
-	ETestNodeActionResult Tick(TObjectPtr<AActor> Owner, const TArray<FTestNode>& Nodes, TObjectPtr<APawn> Pawn, float DeltaSeconds);
+	ETestNodeActionResult Tick(TObjectPtr<class ADataDrivenFunctionalTest> Owner, const TArray<FTestNode>& Nodes, TObjectPtr<APawn> Pawn, float DeltaSeconds);
 	
 private:
 	int CurrentIndex = -1;

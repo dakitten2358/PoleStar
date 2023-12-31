@@ -1,6 +1,7 @@
 #include "TestNodeRunner.h"
+#include "DataDrivenFunctionalTest.h"
 
-ETestNodeActionResult FTestNodeRunner::Tick(TObjectPtr<AActor> Owner, const TArray<FTestNode>& Nodes, TObjectPtr<APawn> Pawn, float DeltaSeconds)
+ETestNodeActionResult FTestNodeRunner::Tick(TObjectPtr<ADataDrivenFunctionalTest> Owner, const TArray<FTestNode>& Nodes, TObjectPtr<APawn> Pawn, float DeltaSeconds)
 {
 	if (CurrentIndex == Nodes.Num())
 		return ETestNodeActionResult::Success;
@@ -9,7 +10,7 @@ ETestNodeActionResult FTestNodeRunner::Tick(TObjectPtr<AActor> Owner, const TArr
 	{
 		CurrentIndex = 0;
 		ActionRunner = FTestNodeActionRunner();
-		ActionRunner.SetActions(Nodes[CurrentIndex].Actions);
+		ActionRunner.SetActions(Owner, Nodes[CurrentIndex].Actions);
 	}
 	
 	if (CurrentIndex < 0 || CurrentIndex >= Nodes.Num())
@@ -23,7 +24,7 @@ ETestNodeActionResult FTestNodeRunner::Tick(TObjectPtr<AActor> Owner, const TArr
 		if (CurrentIndex < Nodes.Num())
 		{
 			ActionRunner = FTestNodeActionRunner();
-			ActionRunner.SetActions(Nodes[CurrentIndex].Actions);
+			ActionRunner.SetActions(Owner, Nodes[CurrentIndex].Actions);
 		}
 		break;
 	case ETestNodeActionResult::Failed:

@@ -2,12 +2,13 @@
 #include "TestNodeAction.h"
 #include "PoleStarLogChannels.h"
 
-void FTestNodeActionRunner::SetActions(const TArray<TObjectPtr<UTestNodeAction>>& SourceActions)
+void FTestNodeActionRunner::SetActions(class ADataDrivenFunctionalTest* OwningFunctionalTest, const TArray<TObjectPtr<UTestNodeAction>>& SourceActions)
 {
+	FunctionalTest = OwningFunctionalTest;
 	Actions.Append(SourceActions);
 	if (Actions.IsEmpty())
 	{
-		UE_LOG(LogPoleStar, Verbose, TEXT("No actions found, adding default MoveToLocation"));
+		UE_LOG(LogPoleStar, Log, TEXT("No actions found, adding default MoveToLocation"));
 		Actions.Emplace(NewObject<UTestNodeAction_MoveToLocation>());
 	}
 	CurrentActionIndex = -1;
@@ -19,10 +20,10 @@ ETestNodeActionResult FTestNodeActionRunner::Tick(const FVector& NodeLocation, T
 		return ETestNodeActionResult::Success;
 	else if (CurrentActionIndex == -1)
 	{
-		ETestNodeActionResult StartResult = Actions[0]->OnTestNodeStart(NodeLocation, Pawn);
+		ETestNodeActionResult StartResult = Actions[0]->OnTestNodeStart(FunctionalTest, NodeLocation, Pawn);
 		if (StartResult == ETestNodeActionResult::Failed)
 		{
-			UE_LOG(LogPoleStar, Warning, TEXT("Failed to start action [0]"));
+			UE_LOG(LogPoleStar, Error, TEXT("Failed to start action [0]"));
 			return StartResult;
 		}
 
@@ -33,11 +34,11 @@ ETestNodeActionResult FTestNodeActionRunner::Tick(const FVector& NodeLocation, T
 	TObjectPtr<UTestNodeAction> Action = Actions[CurrentActionIndex];
 	if (!IsValid(Action))
 	{
-		UE_LOG(LogPoleStar, Warning, TEXT("Action [%d] is invalid"), CurrentActionIndex);
+		UE_LOG(LogPoleStar, Error, TEXT("Action [%d] is invalid"), CurrentActionIndex);
 		return ETestNodeActionResult::Failed;
 	}
 	
-	ETestNodeActionResult TickResult = Action->OnTestNodeTick(NodeLocation, Pawn, DeltaTime);
+	ETestNodeActionResult TickResult = Action->OnTestNodeTick(FunctionalTest, NodeLocation, Pawn, DeltaTime);
 	switch (TickResult)
 	{
 	case ETestNodeActionResult::Success:
@@ -47,11 +48,11 @@ ETestNodeActionResult FTestNodeActionRunner::Tick(const FVector& NodeLocation, T
 		if (CurrentActionIndex < Actions.Num())
 		{
 			UE_LOG(LogPoleStar, Verbose, TEXT("Starting action [%d]"), CurrentActionIndex);
-			Actions[CurrentActionIndex]->OnTestNodeStart(NodeLocation, Pawn);
+			Actions[CurrentActionIndex]->OnTestNodeStart(FunctionalTest, NodeLocation, Pawn);
 		}
 		break;
 	case ETestNodeActionResult::Failed:
-		UE_LOG(LogPoleStar, Warning, TEXT("Failed action [%d]"), CurrentActionIndex);
+		UE_LOG(LogPoleStar, Error, TEXT("Failed action [%d]"), CurrentActionIndex);
 		Actions[CurrentActionIndex]->OnTestNodeEnd(ETestNodeEndReason::Requested, Pawn);
 		CurrentActionIndex = -1;
 		return ETestNodeActionResult::Failed;

@@ -43,6 +43,8 @@ public class PoleStar : ModuleRules
 				"FunctionalTesting",
 				"MessagingCommon",
 				"AutomationMessages",
+				"GameplayAbilities",
+				"GameplayTags",
 			}
 			);
 		

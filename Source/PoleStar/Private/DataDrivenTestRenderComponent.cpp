@@ -37,21 +37,6 @@ FTestSceneProxy::FTestSceneProxy(const UPrimitiveComponent& InComponent)
 			// draw lines between the nodes
 			for (int nodeIndex = 1; nodeIndex < TestNodes.Num(); ++nodeIndex)
 				Lines.Emplace(TestNodes[nodeIndex - 1].Location + Offset, TestNodes[nodeIndex].Location + Offset, FColor::Green, 2.0f);
-
-			// draw spheres around each node
-			for (const FTestNode& TestNode : TestNodes)
-			{
-				float Radius = UTestNodeAction_MoveToLocation::DefaultArrivalRadius;
-				for (const TObjectPtr<UTestNodeAction>& Action : TestNode.Actions)
-				{
-					if (ITestAcceptanceRadiusProvider* RadiusProvider = Cast<ITestAcceptanceRadiusProvider>(Action))
-					{
-						Radius = RadiusProvider->GetAcceptanceRadius();
-						break;
-					}
-				}
-				Spheres.Add(FSphere(Radius, TestNode.Location + Offset, FColor::Green));
-			}
 		}
 
 		// if we have at least one node, find the nearest player start
@@ -67,6 +52,21 @@ FTestSceneProxy::FTestSceneProxy(const UPrimitiveComponent& InComponent)
 					break;
 				}
 			}
+		}
+
+		// draw spheres around each node
+		for (const FTestNode& TestNode : TestNodes)
+		{
+			float Radius = UTestNodeAction_MoveToLocation::DefaultArrivalRadius;
+			for (const TObjectPtr<UTestNodeAction>& Action : TestNode.Actions)
+			{
+				if (ITestAcceptanceRadiusProvider* RadiusProvider = Cast<ITestAcceptanceRadiusProvider>(Action))
+				{
+					Radius = RadiusProvider->GetAcceptanceRadius();
+					break;
+				}
+			}
+			Spheres.Add(FSphere(Radius, TestNode.Location + Offset, FColor::Green));
 		}
 	}
 }

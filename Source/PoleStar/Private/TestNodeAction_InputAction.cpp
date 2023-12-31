@@ -5,7 +5,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Engine/LocalPlayer.h"
 
-ETestNodeActionResult UTestNodeAction_InputAction::OnTestNodeStart(const FVector& NodeLocation, TObjectPtr<APawn> Pawn)
+ETestNodeActionResult UTestNodeAction_InputAction::OnTestNodeStart(const IPoleStarTest* Test, const FVector& NodeLocation, TObjectPtr<APawn> Pawn)
 {
 	// reset back to defaults
 	CurrentState = EInputActionState::PreAction;
@@ -31,7 +31,7 @@ ETestNodeActionResult UTestNodeAction_InputAction::OnTestNodeStart(const FVector
 	return ETestNodeActionResult::Ongoing;
 }
 
-ETestNodeActionResult UTestNodeAction_InputAction::OnTestNodeTick(const FVector& Node, TObjectPtr<APawn> Pawn, float DeltaTime)
+ETestNodeActionResult UTestNodeAction_InputAction::OnTestNodeTick(const IPoleStarTest* Test, const FVector& Node, TObjectPtr<APawn> Pawn, float DeltaTime)
 {
 	if (CurrentState == EInputActionState::PreAction)
 	{

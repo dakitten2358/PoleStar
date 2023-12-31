@@ -7,9 +7,9 @@
 
 const float UTestNodeAction_MoveToLocation::DefaultArrivalRadius = 20.0f;
 
-ETestNodeActionResult UTestNodeAction_MoveToLocation::OnTestNodeStart(const FVector& NodeLocation, TObjectPtr<APawn> Pawn)
+ETestNodeActionResult UTestNodeAction_MoveToLocation::OnTestNodeStart(const IPoleStarTest* Test, const FVector& NodeLocation, TObjectPtr<APawn> Pawn)
 {
-	Super::OnTestNodeStart(NodeLocation, Pawn);
+	Super::OnTestNodeStart(Test, NodeLocation, Pawn);
 	UE_LOG(LogPoleStar, Verbose, TEXT("Starting MoveToLocation action"));
 
 	UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(Pawn->GetMovementComponent());
@@ -22,9 +22,9 @@ ETestNodeActionResult UTestNodeAction_MoveToLocation::OnTestNodeStart(const FVec
 	return ETestNodeActionResult::Ongoing;
 }
 
-ETestNodeActionResult UTestNodeAction_MoveToLocation::OnTestNodeTick(const FVector& NodeLocation, TObjectPtr<APawn> Pawn, float DeltaTime)
+ETestNodeActionResult UTestNodeAction_MoveToLocation::OnTestNodeTick(const IPoleStarTest* Test, const FVector& NodeLocation, TObjectPtr<APawn> Pawn, float DeltaTime)
 {
-	Super::OnTestNodeTick(NodeLocation, Pawn, DeltaTime);
+	Super::OnTestNodeTick(Test, NodeLocation, Pawn, DeltaTime);
 	
 	FVector ActorLocation = Pawn->GetActorLocation();
 
@@ -34,7 +34,7 @@ ETestNodeActionResult UTestNodeAction_MoveToLocation::OnTestNodeTick(const FVect
 		return ETestNodeActionResult::Success;
 	}
 
-	UE_LOG(LogPoleStar, Verbose, TEXT("Moving towards (%.2f, %.2f, %.2f)"), NodeLocation.X, NodeLocation.Y, NodeLocation.Z);
+	UE_LOG(LogPoleStar, VeryVerbose, TEXT("Moving towards (%.2f, %.2f, %.2f)"), NodeLocation.X, NodeLocation.Y, NodeLocation.Z);
 	bool bForceMovement = false;
 	FVector Direction = (NodeLocation - ActorLocation).GetSafeNormal2D();
 	Pawn->GetMovementComponent()->AddInputVector(Direction, bForceMovement);

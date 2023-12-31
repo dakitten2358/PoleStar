@@ -2,6 +2,7 @@
 #include "DataDrivenTestRenderComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "PoleStarLogChannels.h"
 
 #if WITH_EDITOR
 #include "Misc/TransactionObjectEvent.h"
@@ -21,21 +22,58 @@ ADataDrivenFunctionalTest::ADataDrivenFunctionalTest(const FObjectInitializer& O
 #endif
 }
 
-void ADataDrivenFunctionalTest::PrepareTest()
+bool ADataDrivenFunctionalTest::IsReady_Implementation()
 {
-	Super::PrepareTest();
-
-	TestPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (TestPawn)
+	bool isReady = Super::IsReady_Implementation();
+	if (isReady)
 	{
-		NodeRunner = FTestNodeRunner();
+		if (IsValid(TestPawn))
+			return true;
+
+		AttemptToAcquirePawn();
+		isReady = IsValid(TestPawn);
 	}
+	return isReady;
+}
+
+void ADataDrivenFunctionalTest::AttemptToAcquirePawn()
+{
+	TObjectPtr<APawn> Pawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (IsValid(Pawn))
+	{
+		OnPawnAcquired(Pawn);
+	}
+}
+
+void ADataDrivenFunctionalTest::OnPawnAcquired(TObjectPtr<APawn> InPawn)
+{
+	TestPawn = InPawn;
+	NodeRunner = FTestNodeRunner();
+	ResetTriggerStates();
+}
+
+void ADataDrivenFunctionalTest::Trigger(const FGameplayTag& TriggerTag)
+{
+	TriggeredTags.Add(TriggerTag);
+}
+
+bool ADataDrivenFunctionalTest::IsTriggered(const FGameplayTag& TriggerTag) const
+{
+	return TriggeredTags.Contains(TriggerTag);
+}
+
+void ADataDrivenFunctionalTest::ResetTriggerStates()
+{
+	TriggeredTags.Empty();
 }
 
 void ADataDrivenFunctionalTest::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (IsReady() && bIsRunning && TestPawn)
+	if (bIsRunning == false)
+		return;
+	
+	if (IsReady())
 	{
 		ETestNodeActionResult NodesResult = NodeRunner.Tick(this, Nodes, TestPawn, DeltaSeconds);
 		switch (NodesResult)

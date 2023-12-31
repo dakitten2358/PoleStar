@@ -12,11 +12,14 @@ struct FTestNodeActionRunner
 	GENERATED_BODY();
 
 public:
-	void SetActions(const TArray<TObjectPtr<UTestNodeAction>>& SourceActions);
+	void SetActions(class ADataDrivenFunctionalTest* OwningFunctionalTest, const TArray<TObjectPtr<UTestNodeAction>>& SourceActions);
 	ETestNodeActionResult Tick(const FVector& NodeLocation, TObjectPtr<APawn> Pawn, float DeltaTime);
 	
 private:
 	int CurrentActionIndex = -1;
+
+	UPROPERTY(Transient)
+	TObjectPtr<class ADataDrivenFunctionalTest> FunctionalTest;
 
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<UTestNodeAction>> Actions;

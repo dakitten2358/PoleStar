@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UObject/ObjectMacros.h"
+#include "PoleStarTest.h"
 #include "TestNodeAction.generated.h"
 
 class APawn;
@@ -20,14 +21,14 @@ enum class ETestNodeEndReason : uint8
 	Aborted UMETA(DisplayName="Aborted"),
 };
 
-UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
+UCLASS(DefaultToInstanced, EditInlineNew, Abstract, Blueprintable)
 class POLESTAR_API UTestNodeAction : public UObject
 {
 	GENERATED_BODY()
 	
 public:
-	virtual ETestNodeActionResult OnTestNodeStart(const FVector& NodeLocation, TObjectPtr<APawn> Pawn) { return ETestNodeActionResult::Success; }
-	virtual ETestNodeActionResult OnTestNodeTick(const FVector& NodeLocation, TObjectPtr<APawn> Pawn, float DeltaTime) { return ETestNodeActionResult::Success; }
+	virtual ETestNodeActionResult OnTestNodeStart(const IPoleStarTest* Test, const FVector& NodeLocation, TObjectPtr<APawn> Pawn) { return ETestNodeActionResult::Success; }
+	virtual ETestNodeActionResult OnTestNodeTick(const IPoleStarTest* Test, const FVector& NodeLocation, TObjectPtr<APawn> Pawn, float DeltaTime) { return ETestNodeActionResult::Success; }
 	virtual void OnTestNodeEnd(ETestNodeEndReason ReasonForEnd, TObjectPtr<APawn> Pawn) {}
 };
 
