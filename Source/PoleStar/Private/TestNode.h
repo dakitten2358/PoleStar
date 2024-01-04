@@ -12,7 +12,7 @@ struct POLESTAR_API FTestNode
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(MakeEditWidget=true))
-	FVector Location;
+	FVector Location = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly)
 	TArray<TObjectPtr<UTestNodeAction>> Actions;
