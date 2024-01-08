@@ -42,7 +42,7 @@ ETestNodeActionResult UTestNodeAction_InputAction::OnTestNodeTick(const IPoleSta
 		}
 
 		CurrentState = EInputActionState::Press;
-		if (FMath::IsNearlyZero(HoldDuration))
+		if (!FMath::IsNearlyZero(HoldDuration))
 			CurrentState = EInputActionState::Hold;
 	}
 
