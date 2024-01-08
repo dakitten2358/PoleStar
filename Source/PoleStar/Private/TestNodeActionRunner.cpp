@@ -39,24 +39,28 @@ ETestNodeActionResult FTestNodeActionRunner::Tick(const FVector& NodeLocation, T
 	}
 	
 	ETestNodeActionResult TickResult = Action->OnTestNodeTick(FunctionalTest, NodeLocation, Pawn, DeltaTime);
-	switch (TickResult)
+	return ProgressToNextAction(TickResult, NodeLocation, Pawn);
+}
+
+ETestNodeActionResult FTestNodeActionRunner::ProgressToNextAction(ETestNodeActionResult TickResult, const FVector& NodeLocation, TObjectPtr<APawn> Pawn)
+{
+	while (TickResult == ETestNodeActionResult::Success)
 	{
-	case ETestNodeActionResult::Success:
 		UE_LOG(LogPoleStar, Verbose, TEXT("Ending action [%d]"), CurrentActionIndex);
 		Actions[CurrentActionIndex]->OnTestNodeEnd(ETestNodeEndReason::Requested, Pawn);
 		++CurrentActionIndex;
-		if (CurrentActionIndex < Actions.Num())
-		{
-			UE_LOG(LogPoleStar, Verbose, TEXT("Starting action [%d]"), CurrentActionIndex);
-			Actions[CurrentActionIndex]->OnTestNodeStart(FunctionalTest, NodeLocation, Pawn);
-		}
-		break;
-	case ETestNodeActionResult::Failed:
+		if (CurrentActionIndex == Actions.Num())
+			return ETestNodeActionResult::Success;
+		UE_LOG(LogPoleStar, Verbose, TEXT("Starting action [%d]"), CurrentActionIndex);
+		TickResult = Actions[CurrentActionIndex]->OnTestNodeStart(FunctionalTest, NodeLocation, Pawn);
+	}
+
+	if (TickResult == ETestNodeActionResult::Failed)
+	{
 		UE_LOG(LogPoleStar, Error, TEXT("Failed action [%d]"), CurrentActionIndex);
 		Actions[CurrentActionIndex]->OnTestNodeEnd(ETestNodeEndReason::Requested, Pawn);
 		CurrentActionIndex = -1;
-		return ETestNodeActionResult::Failed;
 	}
 
-	return ETestNodeActionResult::Ongoing;
+	return TickResult;
 }

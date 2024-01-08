@@ -23,4 +23,6 @@ private:
 
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<UTestNodeAction>> Actions;
+
+	ETestNodeActionResult ProgressToNextAction(ETestNodeActionResult TickResult, const FVector& NodeLocation, TObjectPtr<APawn> Pawn);
 };
