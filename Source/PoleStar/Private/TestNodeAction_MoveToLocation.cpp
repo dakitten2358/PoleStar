@@ -28,16 +28,18 @@ ETestNodeActionResult UTestNodeAction_MoveToLocation::OnTestNodeTick(const IPole
 	
 	FVector ActorLocation = Pawn->GetActorLocation();
 
+	UE_LOG(LogPoleStar, VeryVerbose, TEXT("Moving towards (%.2f, %.2f, %.2f)"), NodeLocation.X, NodeLocation.Y, NodeLocation.Z);
+	bool bForceMovement = false;
+	FVector Direction = (NodeLocation - ActorLocation).GetSafeNormal2D();
+	Pawn->GetMovementComponent()->AddInputVector(Direction, bForceMovement);
+
+	// check after
 	if (FVector::Dist2D(ActorLocation, NodeLocation) < ArrivalRadius)
 	{
 		UE_LOG(LogPoleStar, Verbose, TEXT("Reached destination."));
 		return ETestNodeActionResult::Success;
 	}
-
-	UE_LOG(LogPoleStar, VeryVerbose, TEXT("Moving towards (%.2f, %.2f, %.2f)"), NodeLocation.X, NodeLocation.Y, NodeLocation.Z);
-	bool bForceMovement = false;
-	FVector Direction = (NodeLocation - ActorLocation).GetSafeNormal2D();
-	Pawn->GetMovementComponent()->AddInputVector(Direction, bForceMovement);
+	
 	return ETestNodeActionResult::Ongoing;
 }
 

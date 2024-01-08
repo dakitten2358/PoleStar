@@ -28,7 +28,7 @@ ETestNodeActionResult UTestNodeAction_InputAction::OnTestNodeStart(const IPoleSt
 	if (!IsValid(InputSystem))
 		return ETestNodeActionResult::Failed;
 
-	return ETestNodeActionResult::Ongoing;
+	return OnTestNodeTick(Test, NodeLocation, Pawn, 0.0f);
 }
 
 ETestNodeActionResult UTestNodeAction_InputAction::OnTestNodeTick(const IPoleStarTest* Test, const FVector& Node, TObjectPtr<APawn> Pawn, float DeltaTime)

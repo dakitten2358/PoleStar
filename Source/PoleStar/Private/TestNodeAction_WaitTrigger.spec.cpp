@@ -2,12 +2,7 @@
 #include "DataDrivenFunctionalTest.h"
 #include "AutomationSpecWorld.h"
 #include "TestNodeAction_WaitTrigger.h"
-#include "NativeGameplayTags.h"
-
-namespace PoleStarTags
-{
-	UE_DEFINE_GAMEPLAY_TAG_STATIC(WaitTriggerTestTag, "PoleStar.Test.WaitTriggerTag");
-}
+#include "PoleStarGameplayTags.h"
 
 BEGIN_DEFINE_SPEC(FPoleStarWaitTriggerTests, "Project.ActorTests", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 	FAutomationSpecWorld AutomationWorld;
@@ -26,7 +21,7 @@ void FPoleStarWaitTriggerTests::Define()
 			AutomationWorld.BeforeEach();
 			TestActor = AutomationWorld.AddActor<ADataDrivenFunctionalTest>();
 			WaitTriggerNode = NewObject<UTestNodeAction_WaitTrigger>();
-			WaitTriggerNode->TriggerTag = PoleStarTags::WaitTriggerTestTag;
+			WaitTriggerNode->TriggerTag = PoleStarGameplayTags::Test_Trigger_Default;
 		});
 
 		AfterEach([this]()
@@ -36,7 +31,7 @@ void FPoleStarWaitTriggerTests::Define()
 
 		It("Immediate success on start when pre-triggered", [this]()
 		{
-			TestActor->Trigger(PoleStarTags::WaitTriggerTestTag);
+			TestActor->Trigger(PoleStarGameplayTags::Test_Trigger_Default);
 			ETestNodeActionResult Result = WaitTriggerNode->OnTestNodeStart(TestActor, FVector::ZeroVector, AutomationWorld.GetPawn());
 			TestEqual("result", Result, ETestNodeActionResult::Success);
 		});
@@ -46,7 +41,7 @@ void FPoleStarWaitTriggerTests::Define()
 			ETestNodeActionResult StartResult = WaitTriggerNode->OnTestNodeStart(TestActor, FVector::ZeroVector, AutomationWorld.GetPawn());
 			TestEqual("StartResult", StartResult, ETestNodeActionResult::Ongoing);
 
-			TestActor->Trigger(PoleStarTags::WaitTriggerTestTag);
+			TestActor->Trigger(PoleStarGameplayTags::Test_Trigger_Default);
 
 			ETestNodeActionResult TickResult = WaitTriggerNode->OnTestNodeTick(TestActor, FVector::ZeroVector, AutomationWorld.GetPawn(), 0.1f);
 			TestEqual("TickResult", TickResult, ETestNodeActionResult::Success);

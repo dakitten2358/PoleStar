@@ -10,6 +10,8 @@ class UTestNodeAction_WaitTrigger : public UTestNodeAction
 	GENERATED_BODY()
 
 public:
+	UTestNodeAction_WaitTrigger();
+
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Functional Testing")
 	FGameplayTag TriggerTag;
 
