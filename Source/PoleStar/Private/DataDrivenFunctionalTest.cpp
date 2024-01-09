@@ -3,6 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "PoleStarLogChannels.h"
+#include "GameFramework/PlayerStart.h"
 
 #if WITH_EDITOR
 #include "Misc/TransactionObjectEvent.h"
@@ -50,6 +51,11 @@ void ADataDrivenFunctionalTest::OnPawnAcquired(TObjectPtr<APawn> InPawn)
 	TestPawn = InPawn;
 	NodeRunner = FTestNodeRunner();
 	ResetTriggerStates();
+
+	// teleport the player to the player start, this allows us to have multiple tests in the same level
+	// TODO(jm):  expose this somehow, and make it optional
+	APlayerStart* PlayerStart = Cast<APlayerStart>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass()));
+	TestPawn->TeleportTo(PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
 }
 
 void ADataDrivenFunctionalTest::Trigger(const FGameplayTag& TriggerTag)
