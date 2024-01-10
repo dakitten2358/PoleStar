@@ -41,17 +41,10 @@ FTestSceneProxy::FTestSceneProxy(const UPrimitiveComponent& InComponent)
 
 		// if we have at least one node, find the nearest player start
 		// and draw a line from that
-		if (TestNodes.Num() > 0)
+		TObjectPtr<APlayerStart> PlayerStart = TestNodeSource->FindPlayerStart();
+		if (IsValid(PlayerStart) && TestNodes.Num() > 0)
 		{
-			for (TObjectIterator<APlayerStart> Itr; Itr; ++Itr)
-			{
-				if (Itr->IsA(APlayerStart::StaticClass()))
-				{
-					APlayerStart* PlayerStart = Cast<APlayerStart>(*Itr);
-					Lines.Emplace(PlayerStart->GetActorLocation(), TestNodes[0].Location + Offset, FColor::Green);
-					break;
-				}
-			}
+			Lines.Emplace(PlayerStart->GetActorLocation(), TestNodes[0].Location + Offset, FColor::Green);
 		}
 
 		// draw spheres around each node

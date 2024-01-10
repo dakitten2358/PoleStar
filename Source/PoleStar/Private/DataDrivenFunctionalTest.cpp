@@ -4,6 +4,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "PoleStarLogChannels.h"
 #include "GameFramework/PlayerStart.h"
+#include "EngineUtils.h"
 
 #if WITH_EDITOR
 #include "Misc/TransactionObjectEvent.h"
@@ -32,30 +33,26 @@ bool ADataDrivenFunctionalTest::IsReady_Implementation()
 			return true;
 
 		AttemptToAcquirePawn();
-		isReady = IsValid(TestPawn);
+		isReady = IsValid(TestPawn) && IsValid(FindPlayerStart());
 	}
 	return isReady;
+}
+
+void ADataDrivenFunctionalTest::StartTest()
+{
+	Super::StartTest();
+
+	// Prep for running the test
+	NodeRunner = FTestNodeRunner();
+	ResetTriggerStates();
+	TeleportToPlayerStart();
 }
 
 void ADataDrivenFunctionalTest::AttemptToAcquirePawn()
 {
 	TObjectPtr<APawn> Pawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (IsValid(Pawn))
-	{
-		OnPawnAcquired(Pawn);
-	}
-}
-
-void ADataDrivenFunctionalTest::OnPawnAcquired(TObjectPtr<APawn> InPawn)
-{
-	TestPawn = InPawn;
-	NodeRunner = FTestNodeRunner();
-	ResetTriggerStates();
-
-	// teleport the player to the player start, this allows us to have multiple tests in the same level
-	// TODO(jm):  expose this somehow, and make it optional
-	APlayerStart* PlayerStart = Cast<APlayerStart>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass()));
-	TestPawn->TeleportTo(PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation());
+		TestPawn = Pawn;
 }
 
 void ADataDrivenFunctionalTest::Trigger(const FGameplayTag& TriggerTag)
@@ -91,6 +88,44 @@ void ADataDrivenFunctionalTest::Tick(float DeltaSeconds)
 				FinishTest(EFunctionalTestResult::Failed, FString(TEXT("OMGFAIL")));
 				return;
 		}
+	}
+}
+
+TObjectPtr<APlayerStart> ADataDrivenFunctionalTest::FindPlayerStart() const
+{
+	// if once was explicitly set, use that
+	if (IsValid(PlayerStart))
+		return PlayerStart;
+
+	// otherwise prefer the nearest player start
+	float BestDistance = MAX_FLT;
+	TObjectPtr<APlayerStart> BestPlayerStart = nullptr;
+	for (TActorIterator<APlayerStart> PlayerStartIterator(GetWorld()); PlayerStartIterator; ++PlayerStartIterator)
+	{
+		TObjectPtr<APlayerStart> CurrentPlayerStart = *PlayerStartIterator;
+		if (IsValid(CurrentPlayerStart))
+		{
+			float Distance = FVector::Distance(CurrentPlayerStart->GetActorLocation(), GetActorLocation());
+			if (Distance < BestDistance)
+			{
+				BestDistance = Distance;
+				BestPlayerStart = CurrentPlayerStart;
+			}
+		}
+	}
+	
+	if (!IsValid(BestPlayerStart))
+	{
+		UE_LOG(LogPoleStar, Error, TEXT("No player start found for test %s"), *GetName());
+	}
+	return BestPlayerStart;
+}
+
+void ADataDrivenFunctionalTest::TeleportToPlayerStart()
+{
+	if (APlayerStart* TargetPlayerStart = FindPlayerStart())
+	{
+		TestPawn->TeleportTo(TargetPlayerStart->GetActorLocation(), TargetPlayerStart->GetActorRotation());
 	}
 }
 

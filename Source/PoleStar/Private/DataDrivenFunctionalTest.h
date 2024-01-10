@@ -17,6 +17,9 @@ class POLESTAR_API ADataDrivenFunctionalTest : public AFunctionalTest, public IT
 	GENERATED_UCLASS_BODY()
 	
 public:
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Functional Testing", meta=(ToolTip="The player start to use when running the test (Optional)"))
+	TObjectPtr<class APlayerStart> PlayerStart;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Functional Testing")
 	TArray<FTestNode> Nodes;
 
@@ -46,8 +49,8 @@ protected:
 	TArray<FGameplayTag> TriggeredTags;
 	void ResetTriggerStates();
 
+	virtual void StartTest() override;
 	void AttemptToAcquirePawn();
-	void OnPawnAcquired(TObjectPtr<APawn> InPawn);
 
 #if WITH_EDITORONLY_DATA
 #if WITH_EDITOR
@@ -62,4 +65,10 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UDataDrivenTestRenderComponent> TestRenderComponent;
 #endif // WITH_EDITORONLY_DATA
+
+public:
+	TObjectPtr<class APlayerStart> FindPlayerStart() const;
+
+protected:
+	void TeleportToPlayerStart();
 };
