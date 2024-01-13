@@ -8,7 +8,7 @@ void FTestNodeActionRunner::SetActions(class ADataDrivenFunctionalTest* OwningFu
 	Actions.Append(SourceActions);
 	if (Actions.IsEmpty())
 	{
-		UE_LOG(LogPoleStar, Log, TEXT("No actions found, adding default MoveToLocation"));
+		UE_LOG(LogPoleStar, Log, TEXT("No actions found, adding default MoveToLocation %p"), OwningFunctionalTest);
 		Actions.Emplace(NewObject<UTestNodeAction_MoveToLocation>());
 	}
 	CurrentActionIndex = -1;
@@ -16,10 +16,13 @@ void FTestNodeActionRunner::SetActions(class ADataDrivenFunctionalTest* OwningFu
 
 ETestNodeActionResult FTestNodeActionRunner::Tick(const FVector& NodeLocation, TObjectPtr<APawn> Pawn, float DeltaTime)
 {
+	check(Actions.Num() > 0);
+
 	if (CurrentActionIndex == Actions.Num())
 		return ETestNodeActionResult::Success;
 	else if (CurrentActionIndex == -1)
 	{
+		check(IsValid(Actions[0]));
 		ETestNodeActionResult StartResult = Actions[0]->OnTestNodeStart(FunctionalTest, NodeLocation, Pawn);
 		if (StartResult == ETestNodeActionResult::Failed)
 		{

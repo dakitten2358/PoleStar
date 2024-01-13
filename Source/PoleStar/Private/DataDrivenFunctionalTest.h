@@ -40,6 +40,7 @@ protected:
 	virtual bool IsReady_Implementation() override;
 
 private:
+	UPROPERTY()
 	FTestNodeRunner NodeRunner;
 
 protected:
@@ -51,6 +52,8 @@ protected:
 
 	virtual void StartTest() override;
 	void AttemptToAcquirePawn();
+
+	
 
 #if WITH_EDITORONLY_DATA
 #if WITH_EDITOR

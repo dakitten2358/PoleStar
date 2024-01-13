@@ -19,5 +19,7 @@ public:
 	
 private:
 	int CurrentIndex = -1;
+
+	UPROPERTY()
 	FTestNodeActionRunner ActionRunner;
 };
