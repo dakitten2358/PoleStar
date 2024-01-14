@@ -2,6 +2,8 @@
 #include "TestNodeAction.h"
 #include "PoleStarLogChannels.h"
 
+class UTestNodeAction_MoveToLocation;
+
 void FTestNodeActionRunner::SetActions(class ADataDrivenFunctionalTest* OwningFunctionalTest, const TArray<TObjectPtr<UTestNodeAction>>& SourceActions)
 {
 	FunctionalTest = OwningFunctionalTest;
@@ -23,7 +25,7 @@ ETestNodeActionResult FTestNodeActionRunner::Tick(const FVector& NodeLocation, T
 	else if (CurrentActionIndex == -1)
 	{
 		check(IsValid(Actions[0]));
-		ETestNodeActionResult StartResult = Actions[0]->OnTestNodeStart(FunctionalTest, NodeLocation, Pawn);
+		ETestNodeActionResult StartResult = Actions[0]->OnTestNodeStart(Cast<const IPoleStarTest>(FunctionalTest), NodeLocation, Pawn);
 		if (StartResult == ETestNodeActionResult::Failed)
 		{
 			UE_LOG(LogPoleStar, Error, TEXT("Failed to start action [0]"));
@@ -41,7 +43,7 @@ ETestNodeActionResult FTestNodeActionRunner::Tick(const FVector& NodeLocation, T
 		return ETestNodeActionResult::Failed;
 	}
 	
-	ETestNodeActionResult TickResult = Action->OnTestNodeTick(FunctionalTest, NodeLocation, Pawn, DeltaTime);
+	ETestNodeActionResult TickResult = Action->OnTestNodeTick(Cast<const IPoleStarTest>(FunctionalTest), NodeLocation, Pawn, DeltaTime);
 	return ProgressToNextAction(TickResult, NodeLocation, Pawn);
 }
 
@@ -55,7 +57,7 @@ ETestNodeActionResult FTestNodeActionRunner::ProgressToNextAction(ETestNodeActio
 		if (CurrentActionIndex == Actions.Num())
 			return ETestNodeActionResult::Success;
 		UE_LOG(LogPoleStar, Verbose, TEXT("Starting action [%d]"), CurrentActionIndex);
-		TickResult = Actions[CurrentActionIndex]->OnTestNodeStart(FunctionalTest, NodeLocation, Pawn);
+		TickResult = Actions[CurrentActionIndex]->OnTestNodeStart(Cast<const IPoleStarTest>(FunctionalTest), NodeLocation, Pawn);
 	}
 
 	if (TickResult == ETestNodeActionResult::Failed)
