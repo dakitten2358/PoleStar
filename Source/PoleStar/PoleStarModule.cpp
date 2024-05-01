@@ -21,7 +21,8 @@ private:
 	void Initialize();
 
 	void HandlePingMessage(const FAutomationWorkerPing& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context);
-	void HandleResetTests(const FAutomationWorkerResetTests& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context);
+	void HandleStartTestSession(const FAutomationWorkerStartTestSession& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context);
+	void HandleStopTestSession(const FAutomationWorkerStopTestSession& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context);
 	void HandleRequestTestsMessage(const FAutomationWorkerRequestTests& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context);
 	void HandleRunTestsMessage(const FAutomationWorkerRunTests& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context);
 	void HandleStopTestsMessage(const struct FAutomationWorkerStopTests& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context);
@@ -51,7 +52,8 @@ void FPoleStarModule::Initialize()
 	UE_LOG(LogPoleStar, Log, TEXT("=========== INITIALIZE ==========="));
 	MessageEndpoint = FMessageEndpoint::Builder("FPoleStarModule")
 		.Handling<FAutomationWorkerPing>(this, &Self::HandlePingMessage)
-		.Handling<FAutomationWorkerResetTests>(this, &Self::HandleResetTests)
+		.Handling<FAutomationWorkerStartTestSession>(this, &Self::HandleStartTestSession)
+		.Handling<FAutomationWorkerStopTestSession>(this, &Self::HandleStopTestSession)
 		.Handling<FAutomationWorkerRequestTests>(this, &Self::HandleRequestTestsMessage)
 		.Handling<FAutomationWorkerRunTests>(this, &Self::HandleRunTestsMessage)
 		.Handling<FAutomationWorkerStopTests>(this, &Self::HandleStopTestsMessage)
@@ -64,9 +66,14 @@ void FPoleStarModule::HandlePingMessage(const FAutomationWorkerPing& Message, co
 	MessageEndpoint->Send(FMessageEndpoint::MakeMessage<FAutomationWorkerPong>(), Context->GetSender());
 }
 
-void FPoleStarModule::HandleResetTests(const FAutomationWorkerResetTests& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context)
+void FPoleStarModule::HandleStartTestSession(const FAutomationWorkerStartTestSession& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context)
 {
-	UE_LOG(LogPoleStar, Log, TEXT("Message: ResetTests"));
+	UE_LOG(LogPoleStar, Log, TEXT("Message: StartTestSession"));
+}
+
+void FPoleStarModule::HandleStopTestSession(const FAutomationWorkerStopTestSession& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context)
+{
+	UE_LOG(LogPoleStar, Log, TEXT("Message: StopTestSession"));
 }
 
 void FPoleStarModule::HandleRequestTestsMessage(const FAutomationWorkerRequestTests& Message, const TSharedRef<IMessageContext, ESPMode::ThreadSafe>& Context)
