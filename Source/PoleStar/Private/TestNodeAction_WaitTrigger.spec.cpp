@@ -6,6 +6,7 @@
 
 BEGIN_DEFINE_SPEC(FPoleStarWaitTriggerTests, "Project.ActorTests", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 	FAutomationSpecWorld AutomationWorld;
+	TObjectPtr<APlayerStart> PlayerStart;
 	TObjectPtr<ADataDrivenFunctionalTest> TestActor;
 	TObjectPtr<UTestNodeAction_WaitTrigger> WaitTriggerNode;
 END_DEFINE_SPEC(FPoleStarWaitTriggerTests)
@@ -19,7 +20,10 @@ void FPoleStarWaitTriggerTests::Define()
 		BeforeEach([this]()
 		{
 			AutomationWorld.BeforeEach();
-			TestActor = AutomationWorld.AddActor<ADataDrivenFunctionalTest>();
+			PlayerStart = AutomationWorld.AddActor<APlayerStart>();
+			TestActor = AutomationWorld.AddActorDeferred<ADataDrivenFunctionalTest>();
+			TestActor->PlayerStart = PlayerStart;
+			AutomationWorld.FinishAddActor(TestActor);
 			WaitTriggerNode = NewObject<UTestNodeAction_WaitTrigger>();
 			WaitTriggerNode->TriggerTag = PoleStarGameplayTags::Test_Trigger_Default;
 		});

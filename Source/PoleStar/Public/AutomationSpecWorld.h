@@ -40,6 +40,20 @@ public:
 		return Actor;
 	}
 
+	template<typename ActorType>
+	ActorType* AddActorDeferred()
+	{
+		ActorType* Actor = World->SpawnActorDeferred<ActorType>(ActorType::StaticClass(), FTransform());
+		CreatedActors.Add(Actor);
+		return Actor;
+	}
+
+	template<typename ActorType>
+	void FinishAddActor(TObjectPtr<ActorType> Actor)
+	{
+		Actor.Get()->FinishSpawning(FTransform());
+	}
+
 	ADefaultPawn* AddPawn();
 
 private:

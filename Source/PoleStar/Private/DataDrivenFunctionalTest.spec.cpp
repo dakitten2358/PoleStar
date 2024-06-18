@@ -11,6 +11,7 @@ namespace PoleStarTags
 BEGIN_DEFINE_SPEC(FPoleStarDataDrivenFunctionalTestTests, "Project.ActorTests", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 	FAutomationSpecWorld AutomationWorld;
 	TObjectPtr<ADataDrivenFunctionalTest> TestActor;
+	TObjectPtr<APlayerStart> PlayerStart;
 END_DEFINE_SPEC(FPoleStarDataDrivenFunctionalTestTests)
 
 #define TEST_STUB(text) It(text, [this]() {TestTrue("implemented", false); })
@@ -22,7 +23,10 @@ void FPoleStarDataDrivenFunctionalTestTests::Define()
 		BeforeEach([this]()
 		{
 			AutomationWorld.BeforeEach();
-			TestActor = AutomationWorld.AddActor<ADataDrivenFunctionalTest>();
+			PlayerStart = AutomationWorld.AddActor<APlayerStart>();
+			TestActor = AutomationWorld.AddActorDeferred<ADataDrivenFunctionalTest>();
+			TestActor->PlayerStart = PlayerStart;
+			AutomationWorld.FinishAddActor(TestActor);
 		});
 
 		AfterEach([this]()
